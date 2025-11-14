@@ -77,7 +77,15 @@ class UserController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $result = $this->UserService->update($request, $id);
+        
+        if ($result[0] === 'Success') {
+            return back()->with('success', $result[1]);
+        } elseif ($result[0] === 'Validation Error') {
+            return back()->withErrors($result[1]);
+        } else {
+            return back()->with('error', $result[1]);
+        }
     }
 
     /**
@@ -85,6 +93,14 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $result = $this->UserService->destroy($id);
+
+        if ($result[0] === 'Success') {
+            return back()->with('success', $result[1]);
+        } elseif ($result[0] === 'Validation Error') {
+            return back()->withErrors($result[1]);
+        } else {
+            return back()->with('error', $result[1]);
+        }
     }
 }

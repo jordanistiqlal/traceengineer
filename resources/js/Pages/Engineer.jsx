@@ -58,9 +58,9 @@ export default function Engineer({response=[]}){
 
     const handleSubmitEngineer = (e) =>{
         e.preventDefault()
+        setData('role', 'ENGINEER');
         
         try {
-            setData('role', 'ENGINEER');
             post(route('user.store'), {
                 onSuccess: () =>{
                     Swal.fire({
