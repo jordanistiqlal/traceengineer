@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
-            $table->foreign('task_id')->references('task_id')->on('tasks')->onDelete('cascade');
-            $table->foreign('ticket_id')->references('ticket_id')->on('tickets')->onDelete('cascade');
+            // $table->foreignUuid('user_id')->nullable()->references('user_id')->on('users')->nullOnDelete();
+            // $table->foreignUuid('task_id')->nullable()->references('task_id')->on('tasks')->nullOnDelete();
+            // $table->foreignUuid('ticket_id')->nullable()->references('ticket_id')->on('tickets')->nullOnDelete();
         });
     }
 
@@ -24,7 +24,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('projects', function (Blueprint $table) {
-            //
+            // $table->dropForeign(['task_id']);
+            // $table->dropForeign(['user_id']);
+            // $table->dropForeign(['ticket_id']);
         });
+
     }
 };

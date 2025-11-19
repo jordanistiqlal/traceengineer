@@ -2,28 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\TicketService;
+use App\Http\Controllers\Controller;
+use App\Services\ProjectService;
+use App\Services\TaskService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class TicketController extends Controller
+class TaskController extends Controller
 {
-    protected $TicketService;
+    protected $TaskService;
+    protected $UserService;
+    protected $ProjectService;
 
     public function __construct(
-        TicketService $TicketService
+        TaskService $TaskService,
+        UserService $UserService,
+        ProjectService $ProjectService,
     ) {
-        $this->TicketService = $TicketService;
+        $this->TaskService = $TaskService;
+        $this->UserService = $UserService;
+        $this->ProjectService = $ProjectService;
     }
-
     public function index(Request $request): Response
     {
-        $response = $this->TicketService->index($request);
+        $response = $this->TaskService->index($request);
+        
+        $user = $this->UserService->index((clone $request)->merge(['role' => 'ENGINEER']));
+        $engineers = $user->map(function ($item) {
+            return ['value' => $item->user_id, 'label' => $item->username];
+        });
 
-        return Inertia::render('Master/Ticket', [
+        $project = $this->ProjectService->index($request);
+        $projects = $project->map(function ($item) {
+            return ['value' => $item->project_id, 'label' => $item->project_name];
+        });
+
+        return Inertia::render('Master/Task', [
             'response' => [
                 'data' => $response,
+                'engineers' => $engineers,
+                'projects' => $projects,
             ],
         ]);
     }
@@ -41,7 +61,7 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        $result = $this->TicketService->store($request);
+        $result = $this->TaskService->store($request);
         
         if ($result[0] === 'Success') {
             return back()->with('success', $result[1]);
@@ -70,7 +90,7 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $result = $this->TicketService->update($request, $id);
+        $result = $this->TaskService->update($request, $id);
         
         if ($result[0] === 'Success') {
             return back()->with('success', $result[1]);
@@ -84,7 +104,7 @@ class TicketController extends Controller
      */
     public function destroy(string $id)
     {
-        $result = $this->TicketService->destroy($id);
+        $result = $this->TaskService->destroy($id);
         
         if ($result[0] === 'Success') {
             return back()->with('success', $result[1]);

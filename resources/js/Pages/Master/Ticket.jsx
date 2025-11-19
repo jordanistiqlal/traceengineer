@@ -8,12 +8,11 @@ import { handleRequestSubmit, handleRequestDelete } from '@/Utils/Request';
 export default function Ticket({response = []}){
     const columns = [
         { key: 'number', label: 'No', sortable: false, searchable: false, render: (item, index) => index + 1, title: "Tickets"},
-        { key: 'ticket_id', label: 'Id', sortable: true, searchable: true},
         { key: 'ticket_site', label: 'Site', sortable: true, searchable: true},
-        { key: 'ticket_problem', label: 'Problem', sortable: true, searchable: true},
+        { key: 'ticket_problem', label: 'Problem', sortable: true, searchable: true, render: (item) => item.ticket_problem.length > 20 ? item.ticket_problem.substring(0, 20) + "..." : item.ticket_problem},
         { key: 'ticket_jam', label: 'Jam', sortable: true, searchable: true},
         { key: 'ticket_from', label: 'From', sortable: true, searchable: true},
-        { key: 'bodyraw', label: 'bodyRaw', sortable: true, searchable: true},
+        { key: 'bodyraw', label: 'bodyRaw', sortable: true, searchable: true, render: (item) => item.bodyraw.length > 50 ? item.bodyraw.substring(0, 50) + "..." : item.bodyraw},
         { key: 'action', label: 'Action', align: 'center', sortable: false, searchable: false,
             render: (item) => (
                 <div className="flex justify-center gap-2">
@@ -47,15 +46,18 @@ export default function Ticket({response = []}){
     const {data, setData, post, put, delete: destroy, processing, reset, errors, clearErrors } = useForm({
         id:"",
         site:"",
-        tanggal: selectedDate,
-        jam: selectedTime,
+        tanggal: "",
+        jam: "",
         created: props.auth.user.username,
         problem:"",
     })
-
+    const dataTable = response?.data || [];
 
     const ToogleForm = () => {
         reset();
+        setSelectedDate(null);
+        setSelectedTime(null);
+        
         if(FormVisible){
             return setFormVisible(false)
         }
@@ -64,7 +66,11 @@ export default function Ticket({response = []}){
 
     const handleSubmit = (e) =>{
         e.preventDefault()
+
         handleRequestSubmit(e, data, post, put, reset, 'ticket', ToogleForm);
+
+        setSelectedDate(null);
+        setSelectedTime(null);
     }
 
     const onEdit = (e) => {
@@ -76,12 +82,16 @@ export default function Ticket({response = []}){
         
         setData({
             id: response.ticket_id || "",
-            site: response.site || "",
-            tanggal: response.tanggal || "",
-            jam: response.jam || "",
-            created: response.created || "",
-            problem: response.problem || ""
+            site: response.ticket_site || "",
+            tanggal: response.ticket_tanggal || "",
+            jam: response.ticket_jam || "",
+            created: response.ticket_from || "",
+            problem: response.bodyraw || ""
         });
+        setSelectedDate(new Date(response.ticket_tanggal))
+        
+        const jamFix = response.ticket_jam ? response.ticket_jam.replace('.', ':') : null;
+        setSelectedTime( jamFix ? new Date(`1970-01-01T${jamFix}:00`) : null );
     }
 
     const onDelete = (id) => {
@@ -103,7 +113,7 @@ export default function Ticket({response = []}){
             <Head title='Ticket Data'></Head>
             <div className={`${FormVisible ? 'hidden' : ''}`}>
                 <div className="flex justify-end w-full px-6 py-2">
-                    <button type="submit" onClick={ToogleForm} className="w-[10%] h-11 rounded-4xl text-xl font-extrabold transform hover:scale-103 transition-all ease-in-out duration-300 tracking-wider bg-[#9AB78F] text-white hover:bg-[#8BA67E] ring-4 hover:ring-green-100/50">
+                    <button type="submit" onClick={ToogleForm} className="w-25 h-11 rounded-4xl text-xl font-extrabold transform hover:scale-103 transition-all ease-in-out duration-300 tracking-wider bg-[#9AB78F] text-white hover:bg-[#8BA67E] ring-4 hover:ring-green-100/50">
                         <span className="drop-shadow-md px-2 ">
                             Create
                         </span>
@@ -111,7 +121,7 @@ export default function Ticket({response = []}){
                 </div>
                 <div className="bg-white rounded-2xl shadow-xl border border-gray-800/20 p-6 overflow-x-auto">
                     <Table 
-                        data={response || []}
+                        data={dataTable || []}
                         columns={columns}
                         search={true}
                         sort={true}
@@ -156,9 +166,12 @@ export default function Ticket({response = []}){
                                 <div className="flex-1 flex flex-col">
                                     <DatePicker
                                         selected={selectedDate}
-                                        onChange={(date) => setSelectedDate(date)}
-                                        dateFormat="dd/MM/yyyy"
-                                        placeholderText="00/00/0000"
+                                        onChange={(date) => {
+                                            setSelectedDate(date)
+                                            setData('tanggal', date ? new Date(date).toISOString().split("T")[0] : '');
+                                        }}
+                                        dateFormat="yyyy-MM-dd"
+                                        placeholderText="0000-00-00"
                                         className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 w-full"
                                         id="tanggal"
                                         name="tanggal"
@@ -178,7 +191,10 @@ export default function Ticket({response = []}){
                                 <div className="flex-1 flex flex-col">
                                     <DatePicker
                                         selected={selectedTime}
-                                        onChange={(time) => setSelectedTime(time)}
+                                        onChange={(time) => {
+                                            setSelectedTime(time)
+                                            setData('jam', time ? time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit'}) : '');
+                                        }}
                                         showTimeSelect
                                         showTimeSelectOnly
                                         timeIntervals={15}

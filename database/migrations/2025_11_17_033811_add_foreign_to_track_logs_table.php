@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('track_logs', function (Blueprint $table) {
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
-            $table->foreign('project_id')->references('project_id')->on('projects')->onDelete('cascade');
+            $table->foreignUuid('user_id')->nullable()->references('user_id')->on('users')->nullOnDelete();
+            $table->foreignUuid('project_id')->nullable()->references('project_id')->on('projects')->nullOnDelete();
         });
     }
 
@@ -23,7 +23,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('track_logs', function (Blueprint $table) {
-            //
+            $table->dropForeign(['user_id']);
+            $table->dropForeign(['project_id']);
         });
+
     }
 };

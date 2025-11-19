@@ -5,25 +5,16 @@ import Select from 'react-select';
 import { useEffect, useState } from 'react';
 import { handleRequestSubmit, handleRequestDelete } from '@/Utils/Request';
 
-const TipeOptions = [
-    { value: 'INSTALASI', label: 'INSTALASI' },
-    { value: 'MAINTENANCE', label: 'MAINTENANCE' }
-];
-
-const engineerOptions = [
-    { value: 'engineer1', label: 'engineer 1' },
-    { value: 'engineer2', label: 'engineer 2' },
-    { value: 'engineer3', label: 'engineer 3' }
-];
+import { Type } from '@/Config/typeConfig';
 
 export default function Project({response = []}) {
     const columns = [
         { key: 'number', label: 'No', sortable: false, searchable: false, render: (item, index) => index + 1, title: "Projects"},
         { key: 'project_name', label: 'Nama Project', sortable: true, searchable: true},
         { key: 'project_type', label: 'Tipe', sortable: true, searchable: true},
-        { key: 'engineer_id', label: 'Engineer', sortable: true, searchable: true},
-        { key: 'task_id', label: 'Task', sortable: true, searchable: true},
-        { key: 'ticket_id', label: 'Ticket', sortable: true, searchable: true},
+        // { key: 'engineer_id', label: 'Engineer', sortable: true, searchable: true},
+        // { key: 'task_id', label: 'Task', sortable: true, searchable: true},
+        // { key: 'ticket_id', label: 'Ticket', sortable: true, searchable: true},
         { key: 'action', label: 'Action', align: 'center', sortable: false, searchable: false,
             render: (item) => (
                 <div className="flex justify-center gap-2">
@@ -48,7 +39,8 @@ export default function Project({response = []}) {
                     </button>
                 </div>
         )}
-    ]
+    ]   
+
     const {data, setData, post, put, delete: destroy, processing, reset, errors, clearErrors } = useForm({
         id:"",
         nama_project:"",
@@ -71,6 +63,7 @@ export default function Project({response = []}) {
 
     const handleSubmit = (e) =>{
         e.preventDefault()
+        
         handleRequestSubmit(e, data, post, put, reset, 'project', ToogleForm);
     }
 
@@ -79,11 +72,12 @@ export default function Project({response = []}) {
         ToogleForm();
 
         const response = (e.currentTarget.dataset.project) ? JSON.parse(e.currentTarget.dataset.project) : null;
-        if(!response) return;
+        if(!response) return
         
         setData({
             id: response.project_id || "",
-            name: response.name || "",
+            nama_project: response.project_name || "",
+            tipe: response.project_type || "",
         });
     }
 
@@ -106,7 +100,7 @@ export default function Project({response = []}) {
             <Head title='Project Data'></Head>
             <div className={`${FormVisible ? 'hidden' : ''}`}>
                 <div className="flex justify-end w-full px-6 py-2">
-                    <button type="submit" onClick={ToogleForm} className="w-[10%] h-11 rounded-4xl text-xl font-extrabold transform hover:scale-103 transition-all ease-in-out duration-300 tracking-wider bg-[#9AB78F] text-white hover:bg-[#8BA67E] ring-4 hover:ring-green-100/50">
+                    <button type="submit" onClick={ToogleForm} className="w-25 h-11 rounded-4xl text-xl font-extrabold transform hover:scale-103 transition-all ease-in-out duration-300 tracking-wider bg-[#9AB78F] text-white hover:bg-[#8BA67E] ring-4 hover:ring-green-100/50">
                         <span className="drop-shadow-md px-2 ">
                             Create
                         </span>
@@ -161,9 +155,9 @@ export default function Project({response = []}) {
                                 <div className="flex-1 flex flex-col">
                                     <Select
                                         id="tipe" name="tipe" placeholder="Select Tipe"
-                                        value={TipeOptions.find(option => option.value === data.tipe)}
+                                        value={Type.find(option => option.value === data.tipe) || null}
                                         onChange={(selectedOption) => setData('tipe', selectedOption?.value || '')}
-                                        options={TipeOptions}
+                                        options={Type}
                                         className="flex-1"
                                         styles={{
                                             control: (base) => ({
@@ -180,7 +174,7 @@ export default function Project({response = []}) {
                             </div>
                             
                             
-                            <div className="p-2">
+                            {/* <div className="p-2">
                                 <label htmlFor="engineer" className="block text-sm font-medium text-gray-700">Engineer</label>
                                 <div className="flex-1 flex flex-col">
                                     <Select
@@ -247,7 +241,7 @@ export default function Project({response = []}) {
 
                                     {errors.ticket && <span className="text-red-500 text-sm">{errors.ticket}</span>}
                                 </div>
-                            </div>
+                            </div> */}
 
 
                             <div className="flex justify-end w-full p-2 pt-10">

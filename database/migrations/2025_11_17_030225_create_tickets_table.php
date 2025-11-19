@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->id();
-            $table->uuid('ticket_id', 32)->unique();
+            $table->uuid('ticket_id', 32)->nullable()->unique();
             $table->string('ticket_site', 128);
             $table->text('ticket_problem')->nullable();
-            $table->string('ticket_jam', 16)->nullable();
+            $table->date('ticket_tanggal')->nullable();
+            $table->string('ticket_jam')->nullable();
             $table->string('ticket_from', 32)->nullable();
-            $table->text('bodyraw');
+            $table->text('bodyraw')->nullable();
             $table->timestamps();
         });
     }

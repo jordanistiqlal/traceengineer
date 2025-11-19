@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\Ticket;
+use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class TicketService.
@@ -42,5 +45,86 @@ class TicketService
         }
         
         return $query->get();
+    }
+
+    public function store($request)
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'site' => ['required','string','max:128'],
+                'tanggal' => ['required','string','max:64'],
+                'jam' => ['required','string'],
+                'created' => ['required','string'],
+                'problem' => ['required','string'],
+            ]);
+
+            $data = [
+                'ticket_site' => $request->site,
+                'ticket_tanggal' => $request->tanggal,
+                'ticket_jam' => $request->jam,
+                'ticket_from' => $request->created,
+                'ticket_problem' => $request->problem,
+                'bodyraw' => $request->problem,
+            ];
+
+            Ticket::create($data);
+            DB::commit();
+
+            return ['Success', 'Ticket created successfully'];
+
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return ['Validation Error', $e->errors()];
+        } catch (Exception $error) {
+            DB::rollBack();
+            return ['Error', $error->getMessage()];
+        }
+    }
+    public function update($request, $id)
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'site' => ['required','string','max:128'],
+                'tanggal' => ['required','string','max:64'],
+                'jam' => ['required','string'],
+                'created' => ['required','string'],
+                'problem' => ['required','string'],
+            ]);
+    
+            $update = [
+                'ticket_site' => $request->site,
+                'ticket_problem' => $request->tanggal,
+                'ticket_jam' => $request->jam,
+                'ticket_from' => $request->created,
+                'bodyraw' => $request->problem,
+            ];
+    
+            Ticket::where('ticket_id',$id)->update($update); 
+            DB::commit();
+    
+            return ['Success', 'User Updated'];
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return ['Validation Error', $e->errors()];
+        } catch (Exception $error) {
+            DB::rollBack();
+            return ['Failed', $error->getMessage()];
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            Ticket::where('ticket_id', $id)->delete();
+            DB::commit();
+            return ['Success', 'Ticket Deleted'];
+        } 
+        catch (Exception $error) {
+            DB::rollBack();
+            return ['Failed', $error->getMessage()];
+        }
     }
 }

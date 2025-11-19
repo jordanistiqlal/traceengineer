@@ -5,21 +5,12 @@ import { useEffect, useState } from 'react';
 import Select from 'react-select';
 import { handleRequestSubmit, handleRequestDelete } from '@/Utils/Request';
 
-const TipeOptions = [
-    { value: 'INSTALASI', label: 'INSTALASI' },
-    { value: 'MAINTENANCE', label: 'MAINTENANCE' }
-];
-
-const engineerOptions = [
-    { value: 'engineer1', label: 'engineer 1' },
-    { value: 'engineer2', label: 'engineer 2' },
-    { value: 'engineer3', label: 'engineer 3' }
-];
+import { Type } from '@/Config/typeConfig';
 
 export default function Task({response = []}){
     const columns = [
         { key: 'number', label: 'No', sortable: false, searchable: false, render: (item, index) => index + 1, title: "Tasks"},
-        { key: 'task_id', label: 'Id', sortable: true, searchable: true},
+        // { key: 'task_id', label: 'Id', sortable: true, searchable: true},
         { key: 'task_type', label: 'Tipe', sortable: true, searchable: true},
         { key: 'project_id', label: 'Project', sortable: true, searchable: true},
         { key: 'user_id', label: 'Engineer', sortable: true, searchable: true},
@@ -60,6 +51,7 @@ export default function Task({response = []}){
     const [FormVisible, setFormVisible] = useState(false)
     const dataResponse = response.data || [];
     const engineers = response.engineers || [];
+    const projects = response.projects || [];
 
 
     const ToogleForm = () => {
@@ -112,7 +104,7 @@ export default function Task({response = []}){
             <Head title='Task Data'></Head>
             <div className={`${FormVisible ? 'hidden' : ''}`}>
                 <div className="flex justify-end w-full px-6 py-2">
-                    <button type="submit" onClick={ToogleForm} className="w-[10%] h-11 rounded-4xl text-xl font-extrabold transform hover:scale-103 transition-all ease-in-out duration-300 tracking-wider bg-[#9AB78F] text-white hover:bg-[#8BA67E] ring-4 hover:ring-green-100/50">
+                    <button type="submit" onClick={ToogleForm} className="w-25 h-11 rounded-4xl text-xl font-extrabold transform hover:scale-103 transition-all ease-in-out duration-300 tracking-wider bg-[#9AB78F] text-white hover:bg-[#8BA67E] ring-4 hover:ring-green-100/50">
                         <span className="drop-shadow-md px-2 ">
                             Create
                         </span>
@@ -120,7 +112,7 @@ export default function Task({response = []}){
                 </div>
                 <div className="bg-white rounded-2xl shadow-xl border border-gray-800/20 p-6 overflow-x-auto">
                     <Table 
-                        data={response || []}
+                        data={dataResponse || []}
                         columns={columns}
                         search={true}
                         sort={true}
@@ -143,33 +135,47 @@ export default function Task({response = []}){
                             <h2 className="text-2xl mb-6 text-gray-700 uppercase font-sans font-bold">Form Project</h2>
                         </div>
                     
-                        <form onSubmit={handleSubmit} id="form" className="p-4">
-                            <div className="p-2 hidden">
-                                <label htmlFor="id" className="block text-sm font-medium text-gray-700">Id</label>
-                                <div className="flex-1 flex flex-col">
-                                    <input type="id" name="id" id="id" placeholder="ENG328F" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value={data.id} onChange={(e) => setData('id', e.target.value)}/>
-
-                                    {errors.id && <span className="text-red-500 text-sm">{errors.id}</span>}
+                    <form onSubmit={handleSubmit} id="form" className="p-4">
+                        <div className="p-2 flex items-center"> 
+                            <label htmlFor="task_name" className="w-55 text-sm font-medium text-gray-700" > Nama Task </label> 
+                            <div className="flex-1 flex flex-col">
+                                <input type="text" name="task_name" id="task_name" placeholder="Task Name" className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value={data.task_name} onChange={(e) => setData('task_name', e.target.value)}/>
+                                {errors.task_name && <span className="text-red-500 text-sm">{errors.task_name}</span>}
+                            </div>
+                        </div>
+                                
+                        {/* Task Input */}
+                        <div className="p-2 flex items-center"> 
+                            <label htmlFor="type" className="w-55 text-sm font-medium text-gray-700" > Tipe Task </label> 
+                            <div className="flex-1 flex flex-col">
+                                <Select
+                                    id="type" name="type" placeholder="Select Task"
+                                    value={Type.find(option => option.value === data.name)}
+                                    onChange={(selectedOption) => setData('type', selectedOption?.value || '')}
+                                    options={Type}
+                                    className="flex-1"
+                                    styles={{
+                                        control: (base) => ({
+                                            ...base,
+                                            borderColor: '#d1d5db',
+                                            boxShadow: 'none',
+                                            '&:hover': { borderColor: '#d1d5db' }
+                                        })
+                                    }}
+                                />
+                                {errors.type && <span className="text-red-500 text-sm">{errors.type}</span>}
                                 </div>
                             </div>
 
-                            <div className="p-2">
-                                <label htmlFor="project_name" className="block text-sm font-medium text-gray-700">Project Name</label>
-                                <div className="flex-1 flex flex-col">
-                                    <input type="project_name" name="project_name" id="project_name" placeholder="John Doe" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value={data.nama_project} onChange={(e) => setData('nama_project', e.target.value)}/>
-
-                                    {errors.nama_project && <span className="text-red-500 text-sm">{errors.nama_project}</span>}
-                                </div>
-                            </div>
-
-                            <div className="p-2">
-                                <label htmlFor="tipe" className="block text-sm font-medium text-gray-700">Type</label>
+                            {/* Project Input */}
+                            <div className="p-2 flex items-center"> 
+                                <label htmlFor="project" className="w-55 text-sm font-medium text-gray-700" > Project </label> 
                                 <div className="flex-1 flex flex-col">
                                     <Select
-                                        id="tipe" name="tipe" placeholder="Select Tipe"
-                                        value={TipeOptions.find(option => option.value === data.tipe)}
-                                        onChange={(selectedOption) => setData('tipe', selectedOption?.value || '')}
-                                        options={TipeOptions}
+                                        id="project" name="project" placeholder="Select Project"
+                                        value={projects.find(option => option.value === data.project)}
+                                        onChange={(selectedOption) => setData('project', selectedOption?.value || '')}
+                                        options={projects}
                                         className="flex-1"
                                         styles={{
                                             control: (base) => ({
@@ -180,14 +186,13 @@ export default function Task({response = []}){
                                             })
                                         }}
                                     />
-
-                                    {errors.tipe && <span className="text-red-500 text-sm">{errors.tipe}</span>}
+                                    {errors.project && <span className="text-red-500 text-sm">{errors.project}</span>}
                                 </div>
                             </div>
                             
-                            
-                            <div className="p-2">
-                                <label htmlFor="engineer" className="block text-sm font-medium text-gray-700">Engineer</label>
+                            {/* Engineer Input */}
+                            <div className="p-2 flex items-center"> 
+                                <label htmlFor="engineer" className="w-55 text-sm font-medium text-gray-700" > Engineer </label> 
                                 <div className="flex-1 flex flex-col">
                                     <Select
                                         id="engineer" name="engineer" placeholder="Select Engineer"
@@ -204,54 +209,7 @@ export default function Task({response = []}){
                                             })
                                         }}
                                     />
-
                                     {errors.engineer && <span className="text-red-500 text-sm">{errors.engineer}</span>}
-                                </div>
-                            </div>
-
-                            <div className="p-2">
-                                <label htmlFor="task" className="block text-sm font-medium text-gray-700">Task</label>
-                                <div className="flex-1 flex flex-col">
-                                    <Select
-                                        id="task" name="task" placeholder="Select Task"
-                                        value={engineerOptions.find(option => option.value === data.task)}
-                                        onChange={(selectedOption) => setData('task', selectedOption?.value || '')}
-                                        options={engineerOptions}
-                                        className="flex-1"
-                                        styles={{
-                                            control: (base) => ({
-                                                ...base,
-                                                borderColor: '#d1d5db',
-                                                boxShadow: 'none',
-                                                '&:hover': { borderColor: '#d1d5db' }
-                                            })
-                                        }}
-                                    />
-
-                                    {errors.task && <span className="text-red-500 text-sm">{errors.task}</span>}
-                                </div>
-                            </div>
-
-                            <div className="p-2">
-                                <label htmlFor="ticket" className="block text-sm font-medium text-gray-700">Ticket</label>
-                                <div className="flex-1 flex flex-col">
-                                    <Select
-                                        id="ticket" name="ticket" placeholder="Select Ticket"
-                                        value={engineerOptions.find(option => option.value === data.ticket)}
-                                        onChange={(selectedOption) => setData('ticket', selectedOption?.value || '')}
-                                        options={engineerOptions}
-                                        className="flex-1"
-                                        styles={{
-                                            control: (base) => ({
-                                                ...base,
-                                                borderColor: '#d1d5db',
-                                                boxShadow: 'none',
-                                                '&:hover': { borderColor: '#d1d5db' }
-                                            })
-                                        }}
-                                    />
-
-                                    {errors.ticket && <span className="text-red-500 text-sm">{errors.ticket}</span>}
                                 </div>
                             </div>
 
@@ -264,7 +222,7 @@ export default function Task({response = []}){
                                 </button>
                             </div>
                             
-                        </form>
+                    </form>
 
                     </div>
                 </div>

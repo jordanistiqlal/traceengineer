@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('track_logs', function (Blueprint $table) {
             $table->id();
             $table->uuid('track_log_id', 32)->unique();
-            $table->string('user_id');
+            // $table->string('user_id')->nullable();
             $table->string('type', 64);
-            $table->string('project_id');
+            // $table->string('project_id')->nullable();
             $table->string('latitude', 32)->nullable();
             $table->string('longitude', 32)->nullable();
             

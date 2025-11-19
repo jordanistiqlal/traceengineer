@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EngineerController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TicketController;
 use App\Http\Controllers\UserController;
 use App\Models\Project;
 use Illuminate\Support\Facades\Route;
@@ -34,8 +36,8 @@ Route::middleware('auth:sanctum','verified')->prefix('')->group(function () {
     Route::prefix('masterdata')->group(function () {
         Route::resource('/user', UserController::class);
         Route::resource('/project', ProjectController::class);
-        Route::get('/ticket', function () {return Inertia::render('Master/Ticket');});
-        Route::get('/task', function () {return Inertia::render('Master/Task');});
+        Route::resource('/ticket', TicketController::class);
+        Route::resource('/task', TaskController::class);
     });
 });
 

@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->foreign('project_id')->references('project_id')->on('projects')->onDelete('cascade');
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreignUuid('project_id')->nullable()->references('project_id')->on('projects')->nullOnDelete();
+            $table->foreignUuid('user_id')->nullable()->references('user_id')->on('users')->nullOnDelete();
         });
     }
 
@@ -23,7 +23,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            //
+            $table->dropForeign(['project_id']);
+            $table->dropForeign(['user_id']);
         });
+
     }
 };

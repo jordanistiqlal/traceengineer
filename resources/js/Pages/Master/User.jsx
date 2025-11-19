@@ -112,7 +112,7 @@ export default function User({response = []}){
             <Head title='User Data'></Head>
             <div className={`${FormVisible ? 'hidden' : ''}`}>
                 <div className="flex justify-end w-full px-6 py-2">
-                    <button type="submit" onClick={ToogleForm} className="w-[10%] h-11 rounded-4xl text-xl font-extrabold transform hover:scale-103 transition-all ease-in-out duration-300 tracking-wider bg-[#9AB78F] text-white hover:bg-[#8BA67E] ring-4 hover:ring-green-100/50">
+                    <button type="submit" onClick={ToogleForm} className="w-25 h-11 rounded-4xl text-xl font-extrabold transform hover:scale-103 transition-all ease-in-out duration-300 tracking-wider bg-[#9AB78F] text-white hover:bg-[#8BA67E] ring-4 hover:ring-green-100/50">
                         <span className="drop-shadow-md px-2 ">
                             Create
                         </span>
@@ -186,7 +186,8 @@ export default function User({response = []}){
                                     <div className="flex-1 flex flex-col">
                                         <Select
                                             id="role" name="role" placeholder="Select Role"
-                                            value={RoleOptions.find(option => option.value === data.name)}
+                                            // value={RoleOptions.find(option => option.value === data.name)}
+                                            value={RoleOptions.find(option => option.value === data.role) || null}
                                             onChange={(selectedOption) => setData('role', selectedOption?.value || '')}
                                             options={RoleOptions}
                                             className="flex-1"
