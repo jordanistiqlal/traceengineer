@@ -21,4 +21,8 @@ class Project extends Model
     public function task(){
         return $this->hasMany(Task::class, 'project_id', 'project_id');
     }
+
+    public function ticket(){
+        return $this->hasMany(Ticket::class, 'project_id', 'project_id');
+    }
 }

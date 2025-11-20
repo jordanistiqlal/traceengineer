@@ -140,4 +140,8 @@ class UserService
             return ['Failed', $error->getMessage()];
         }
     }
+
+    public function projectsUser($id){
+        return User::with(['task'])->where('user_id', $id)->get();
+    }
 }

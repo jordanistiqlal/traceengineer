@@ -68,8 +68,7 @@ class ProjectController extends Controller
      */
     public function show(string $id)
     {
-        $response = $this->ProjectService->show($id);
-        return response()->json($response);
+
     }
 
     /**

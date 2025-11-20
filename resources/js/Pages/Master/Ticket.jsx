@@ -4,15 +4,18 @@ import Table from '@/Components/Table';
 import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import { handleRequestSubmit, handleRequestDelete } from '@/Utils/Request';
+import Select from 'react-select';
 
 export default function Ticket({response = []}){
     const columns = [
         { key: 'number', label: 'No', sortable: false, searchable: false, render: (item, index) => index + 1, title: "Tickets"},
+        { key: 'project.project_name', label: 'Site', sortable: true, searchable: true, render: (item) => item.project ? item.project.project_name : ''},
         { key: 'ticket_site', label: 'Site', sortable: true, searchable: true},
-        { key: 'ticket_problem', label: 'Problem', sortable: true, searchable: true, render: (item) => item.ticket_problem.length > 20 ? item.ticket_problem.substring(0, 20) + "..." : item.ticket_problem},
+        { key: 'ticket_tanggal', label: 'Tanggal', sortable: true, searchable: true},
+        { key: 'ticket_problem', label: 'Problem', sortable: true, searchable: true},
         { key: 'ticket_jam', label: 'Jam', sortable: true, searchable: true},
         { key: 'ticket_from', label: 'From', sortable: true, searchable: true},
-        { key: 'bodyraw', label: 'bodyRaw', sortable: true, searchable: true, render: (item) => item.bodyraw.length > 50 ? item.bodyraw.substring(0, 50) + "..." : item.bodyraw},
+        { key: 'bodyraw', label: 'bodyRaw', sortable: true, searchable: true, render: (item) => item.bodyraw.length > 30 ? item.bodyraw.substring(0, 30) + "..." : item.bodyraw},
         { key: 'action', label: 'Action', align: 'center', sortable: false, searchable: false,
             render: (item) => (
                 <div className="flex justify-center gap-2">
@@ -48,10 +51,14 @@ export default function Ticket({response = []}){
         site:"",
         tanggal: "",
         jam: "",
-        created: props.auth.user.username,
+        created: props.auth.user.user_id,
         problem:"",
+        project:"",
+        bodyraw:"",
     })
-    const dataTable = response?.data || [];
+    const dataTable = response?.data || []
+    const projectSelection = response?.selection?.projects || []
+    
 
     const ToogleForm = () => {
         reset();
@@ -79,14 +86,16 @@ export default function Ticket({response = []}){
 
         const response = (e.currentTarget.dataset.ticket) ? JSON.parse(e.currentTarget.dataset.ticket) : null;
         if(!response) return;
-        
+
         setData({
             id: response.ticket_id || "",
             site: response.ticket_site || "",
             tanggal: response.ticket_tanggal || "",
             jam: response.ticket_jam || "",
             created: response.ticket_from || "",
-            problem: response.bodyraw || ""
+            problem: response.ticket_problem || "",
+            bodyraw: response.bodyraw || "",
+            project: response.project_id || ""
         });
         setSelectedDate(new Date(response.ticket_tanggal))
         
@@ -150,6 +159,28 @@ export default function Ticket({response = []}){
                                 <div className="flex-1 flex flex-col">
                                     <input type="text" name="id" id="id" placeholder="id" className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value={data.id} onChange={(e) => setData('id', e.target.value)}/>
                                     {errors.id && <span className="text-red-500 text-sm">{errors.id}</span>}
+                                </div>
+                            </div>
+
+                            <div className="p-2 flex items-center"> 
+                                <label htmlFor="project" className="w-55 text-sm font-medium text-gray-700" > Project </label> 
+                                <div className="flex-1 flex flex-col">
+                                    <Select
+                                        id="project" name="project" placeholder="Select Project"
+                                        value={projectSelection.find(option => option.value === data.project) || null}
+                                        onChange={(selectedOption) => setData('project', selectedOption?.value || '')}
+                                        options={projectSelection}
+                                        className="flex-1"
+                                        styles={{
+                                            control: (base) => ({
+                                                ...base,
+                                                borderColor: '#d1d5db',
+                                                boxShadow: 'none',
+                                                '&:hover': { borderColor: '#d1d5db' }
+                                            })
+                                        }}
+                                    />
+                                    {errors.project && <span className="text-red-500 text-sm">{errors.project}</span>}
                                 </div>
                             </div>
                             
@@ -222,8 +253,16 @@ export default function Ticket({response = []}){
                             <div className="p-2 flex items-center"> 
                                 <label htmlFor="problem" className="w-55 text-sm font-medium text-gray-700" >Problem</label> 
                                 <div className="flex-1 flex flex-col">
-                                    <textarea name="problem" id="problem" placeholder="." className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value={data.problem} onChange={(e) => setData('problem', e.target.value)}/>
+                                    <input name="problem" id="problem" placeholder="problem..." className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value={data.problem} onChange={(e) => setData('problem', e.target.value)}/>
                                     {errors.problem && <span className="text-red-500 text-sm">{errors.problem}</span>}
+                                </div>
+                            </div>
+
+                            <div className="p-2 flex items-center"> 
+                                <label htmlFor="bodyraw" className="w-55 text-sm font-medium text-gray-700" >BodyRaw</label> 
+                                <div className="flex-1 flex flex-col">
+                                    <textarea name="bodyraw" id="bodyraw" placeholder="bodyRaw..." className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" value={data.bodyraw} onChange={(e) => setData('bodyraw', e.target.value)}/>
+                                    {errors.bodyraw && <span className="text-red-500 text-sm">{errors.bodyraw}</span>}
                                 </div>
                             </div>
         

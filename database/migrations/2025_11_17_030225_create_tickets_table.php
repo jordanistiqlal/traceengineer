@@ -20,6 +20,9 @@ return new class extends Migration
             $table->string('ticket_jam')->nullable();
             $table->string('ticket_from', 32)->nullable();
             $table->text('bodyraw')->nullable();
+
+            $table->dateTime('start_time')->nullable();
+            $table->dateTime('end_time')->nullable();
             $table->timestamps();
         });
     }

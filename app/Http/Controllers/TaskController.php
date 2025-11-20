@@ -74,7 +74,8 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $response = $this->TaskService->show($id);
+        return response()->json($response);
     }
 
     /**

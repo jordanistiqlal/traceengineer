@@ -12,18 +12,36 @@ export default function Login({errors}){
     const handleSubmit = (e) =>{
         e.preventDefault()
 
-        post(route('login.post'), {
-            onSuccess: () =>{
-                reset('password')
-            },
-            onError: (errors) =>{
-                Swal.fire({
-                    text: errors,
-                    icon: "error",
-                    title: "Oops...",
-                })
-            }
-        })
+        try {            
+            post(route('login.post'), {
+                onSuccess: () =>{
+                    // Swal.fire({
+                    //     title: "Login Succesfully",
+                    //     icon: "success",
+                    //     draggable: true
+                    // });
+
+                    // reset('password')
+                },
+                onError: (errors) =>{
+                    const errorMessages = typeof errors != 'object' ? errors : Object.values(errors).flat().join('\n');
+                    
+                    Swal.fire({
+                        text: errorMessages,
+                        icon: "error",
+                        title: "Oops...",
+                        confirmButtonText: 'Close'
+                    })
+                }
+            })
+        } catch (error) {
+            Swal.fire({
+                text: error,
+                icon: "error",
+                title: "Oops...",
+            })
+        }
+
     }
     return (
         <> 

@@ -19,6 +19,8 @@ return new class extends Migration
             // $table->string('project_id')->nullable();
             $table->string('latitude', 32)->nullable();
             $table->string('longitude', 32)->nullable();
+            $table->boolean('is_mock')->default(false);
+            $table->timestamp('timestamp')->nullable();
             
             $table->timestamps();
         });

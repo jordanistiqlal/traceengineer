@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Request as FacadesRequest;
 use Inertia\Response;
 use Inertia\Inertia;
 
@@ -19,7 +18,7 @@ class InstalasiController extends Controller
         $this->ProjectService = $ProjectService;
     }
 
-    public function index(FacadesRequest $request): Response
+    public function index(Request $request): Response
     {
         return Inertia::render('Project/Instalasi', [
             'response' => [

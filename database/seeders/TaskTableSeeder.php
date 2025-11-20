@@ -24,7 +24,7 @@ class TaskTableSeeder extends Seeder
             [
                 'task_id' => 'a03a8694-9767-4884-aace-c1cb4960f0b3',
                 'task_name' => 'Task Delta',
-                'task_type' => 'MAINTENANCE',
+                'task_type' => 'MAINTANANCE',
                 'project_id' => '10433c2a-b600-4efb-9171-3362a784092e',
                 'user_id' => 'ENGKDO44',
             ],

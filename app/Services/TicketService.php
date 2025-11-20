@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Project;
 use App\Models\Ticket;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +15,7 @@ class TicketService
 {
     public function index($request)
     {
-        $query = Ticket::query();
+        $query = Ticket::with(['project']);
         
         if ($request->has('ticket_site') && !empty($request->ticket_site)) {
             $query->where('ticket_site', $request->ticket_site);
@@ -47,6 +48,19 @@ class TicketService
         return $query->get();
     }
 
+    public function show($id)
+    {
+        return Project::with([
+            'ticket' => function ($q) {
+                $q->select('ticket_id', 'project_id', 'ticket_site', 'ticket_tanggal', 'ticket_jam', 'ticket_from', 'ticket_problem', 'bodyraw');
+            }, 
+            'ticket.user'=> function ($q) {
+                $q->select('user_id', 'name', 'nohp', 'email');
+            }
+        ])
+        ->where('project_id', $id)->first();
+    }
+
     public function store($request)
     {
         DB::beginTransaction();
@@ -57,6 +71,8 @@ class TicketService
                 'jam' => ['required','string'],
                 'created' => ['required','string'],
                 'problem' => ['required','string'],
+                'project' => ['required','string'],
+                'bodyraw' => ['required','string'],
             ]);
 
             $data = [
@@ -65,7 +81,8 @@ class TicketService
                 'ticket_jam' => $request->jam,
                 'ticket_from' => $request->created,
                 'ticket_problem' => $request->problem,
-                'bodyraw' => $request->problem,
+                'bodyraw' => $request->bodyraw,
+                'project_id' => $request->project,
             ];
 
             Ticket::create($data);
@@ -91,14 +108,18 @@ class TicketService
                 'jam' => ['required','string'],
                 'created' => ['required','string'],
                 'problem' => ['required','string'],
+                'project' => ['required','string'],
+                'bodyraw' => ['required','string'],
             ]);
     
             $update = [
                 'ticket_site' => $request->site,
-                'ticket_problem' => $request->tanggal,
+                'ticket_tanggal' => $request->tanggal,
+                'ticket_problem' => $request->problem,
                 'ticket_jam' => $request->jam,
                 'ticket_from' => $request->created,
-                'bodyraw' => $request->problem,
+                'bodyraw' => $request->bodyraw,
+                'project_id' => $request->project,
             ];
     
             Ticket::where('ticket_id',$id)->update($update); 

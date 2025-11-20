@@ -17,4 +17,14 @@ class Ticket extends Model
             $model->ticket_id = str_replace("-","",Uuid::uuid4()->toString());
         });
     }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class, 'project_id', 'project_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'ticket_from', 'user_id');
+    }
 }

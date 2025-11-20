@@ -2,36 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
 use App\Services\ProjectService;
-use App\Services\TicketService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class TicketController extends Controller
+class MaintananceController extends Controller
 {
-    protected $TicketService;
     protected $ProjectService;
 
     public function __construct(
-        TicketService $TicketService,
         ProjectService $ProjectService,
     ) {
-        $this->TicketService = $TicketService;
-                $this->ProjectService = $ProjectService;
+        $this->ProjectService = $ProjectService;
     }
-
+    
     public function index(Request $request): Response
     {
-        $response = $this->TicketService->index($request);
         $project = $this->ProjectService->index($request);
         $projects = $project->map(function ($item) {
             return ['value' => $item->project_id, 'label' => $item->project_name];
         });
 
-        return Inertia::render('Master/Ticket', [
+        return Inertia::render('Project/Maintanance', [
             'response' => [
-                'data' => $response,
+                'projects' => $project,
                 'selection' => [
                     'projects' => $projects,
                 ],
@@ -52,12 +48,7 @@ class TicketController extends Controller
      */
     public function store(Request $request)
     {
-        $result = $this->TicketService->store($request);
-        
-        if ($result[0] === 'Success') {
-            return back()->with('success', $result[1]);
-        }
-        return back()->withErrors($result[1]);
+        //
     }
 
     /**
@@ -65,8 +56,7 @@ class TicketController extends Controller
      */
     public function show(string $id)
     {
-        $response = $this->TicketService->show($id);
-        return response()->json($response);
+        //
     }
 
     /**
@@ -82,13 +72,7 @@ class TicketController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $result = $this->TicketService->update($request, $id);
-        
-        if ($result[0] === 'Success') {
-            return back()->with('success', $result[1]);
-        } 
-
-        return back()->withErrors($result[1]);
+        //
     }
 
     /**
@@ -96,12 +80,6 @@ class TicketController extends Controller
      */
     public function destroy(string $id)
     {
-        $result = $this->TicketService->destroy($id);
-        
-        if ($result[0] === 'Success') {
-            return back()->with('success', $result[1]);
-        }
-
-        return back()->withErrors($result[1]);
+        //
     }
 }

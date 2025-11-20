@@ -6,6 +6,7 @@ use App\Models\RefreshToken;
 use App\Models\User;
 use Exception;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -64,43 +65,38 @@ class AuthService
 
     public function login($request)
     {
-            try{
-                $request->validate([
-                    'username' => 'required|string',
-                    'password' => 'required|string'
-                ]);
-
-                $user = User::where('username', $request->username)->first();
-
-                if (!$user) {
-                    throw new \Exception ('User Not Found');
-                }
-
-                Auth::logout(); // Ensure no user is logged in before attempt
-                Session::flush(); // Remove all session data
-
-                $credentials = ['email'=>$user->email, 'password'=>$request->password];
-
-                // dd(!Auth::guard('web')->attempt($credentials));
-                // dd(!Auth::attempt($credentials));
-                
-                if(!Auth::attempt($credentials)){
-                    throw new \Exception ('Invalid Unauthorized');
-                }
-
-                $user = Auth::user();
-
-                if(!Hash::check($request->password, $user->password, [])){
-                    throw new \Exception('Invalid Credentials');
-                }
-
-                return ['Success', 'Login Successful'];
-                
-            }catch(Exception $error){
-                return [
-                    'message' => $error->getMessage()
-                ];
+        try {
+            $request->validate([
+                'username' => 'required|string',
+                'password' => 'required|string'
+            ]);
+    
+            // cari user berdasarkan username
+            $user = User::where('username', $request->username)->first();
+    
+            if (!$user) {
+                throw new \Exception('User tidak ditemukan');
             }
+    
+            // Auth::attempt harus pakai email karena guard web default pakai "email"
+            $credentials = [
+                'email' => $user->email,
+                'password' => $request->password
+            ];
+    
+            if (!Auth::attempt($credentials, $request->filled('remember'))) {
+                throw new \Exception('Username atau Password salah');
+            }
+    
+            // regenerasi session → penting!
+            $request->session()->regenerate();
+    
+            return ['Success', 'Login Successful'];
+        } catch (ValidationException $e) {
+            return ['Validation Error', $e->errors()];
+        } catch (Exception $error) {
+            return ['Error', $error->getMessage()];
+        }
     }
 
     public function logout($request)
@@ -141,7 +137,7 @@ class AuthService
                 'message' => 'Login Successful',
                 'data' => [
                     'user' => [
-                        'id' => $user->id,
+                        'id' => $user->user_id,
                         'name' => $user->name,
                         'username' => $user->username,
                         'email' => $user->email,
@@ -150,7 +146,7 @@ class AuthService
                     'access_token' => $accessToken,
                     'refresh_token' => $refreshToken,
                     'token_type' => 'Bearer',
-                    'expires_in' => config('jwt.access_token_ttl', 3600)
+                    'expires_in' => config('jwt.access_token_ttl', 3600),
                 ]
             ];
 
@@ -174,11 +170,11 @@ class AuthService
     {
         $payload = [
             'iss' => config('app.url'),
-            'sub' => $user->id,
+            'sub' => $user->user_id,
             'iat' => time(),
             'exp' => time() + config('jwt.access_token_ttl', 3600),
             'user' => [
-                'id' => $user->id,
+                'id' => $user->user_id,
                 'username' => $user->username,
                 'email' => $user->email,
                 'role' => $user->role,
@@ -193,9 +189,9 @@ class AuthService
         $token = Str::random(64);
         $expiresAt = now()->addDays(config('jwt.refresh_token_ttl_days', 7));
 
-        RefreshToken::where('user_id', $user->id)->delete();
+        RefreshToken::where('user_id', $user->user_id)->delete();
         RefreshToken::create([
-            'user_id' => $user->id,
+            'user_id' => $user->user_id,
             'token' => hash('sha256', $token),
             'expires_at' => $expiresAt,
         ]);
@@ -258,7 +254,7 @@ class AuthService
     public function api_logout($request)
     {
         try {
-            $userId = $request->user()->id;
+            $userId = $request->user()->user_id;
             RefreshToken::where('user_id', $userId)->delete();
 
             return [

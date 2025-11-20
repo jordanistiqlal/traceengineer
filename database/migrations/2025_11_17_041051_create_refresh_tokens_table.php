@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('refresh_tokens', function (Blueprint $table) {
             $table->id();
-            $table->string('user_id');
+            $table->uuid('user_id');
             $table->string('token', 255);
             $table->timestamp('expires_at');
             $table->timestamps();
             
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->nullable()->references('user_id')->on('users')->onDelete('cascade');
             
             $table->index('token');
             $table->index(['user_id', 'expires_at']);
