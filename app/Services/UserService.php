@@ -144,8 +144,8 @@ class UserService
     public function projectsUser($id){
         $user = User::with([
             'task' => function($query){
-                $query->select('task_id','task_name','project_id','user_id','start_time','end_time')
-                ->where('end_time', null);
+                $query->select('task_id','task_name','project_id','user_id','start_time','end_time');
+                // ->where('end_time', null);
             },
             'task.project:project_id,project_name,project_type',
             'task.project.ticket' => function ($query) {
@@ -195,7 +195,8 @@ class UserService
                         'ticket_tanggal' => $ticket->ticket_tanggal,
                         'ticket_problem' => $ticket->ticket_problem,
                         'bodyraw' => $ticket->bodyraw,
-                        'is_work' => $ticket->start_time ? true : false
+                        'is_work' => $ticket->start_time ? true : false,
+                        'is_done' => $ticket->end_time ? true : false,
                     ];
                 }
                 
@@ -209,6 +210,7 @@ class UserService
                 'project_id' => $task->project_id,
                 'task_name' => $task->task_name,
                 'is_work' => $task->start_time ? true : false,
+                'is_done' => $ticket->end_time ? true : false,
             ] ?? [];
         }
 

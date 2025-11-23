@@ -50,7 +50,7 @@ class ApiController extends Controller
     public function projects(Request $request)
     {
         $userId = auth('api')->id();
-        $response = $this->UserService->projectsUser($userId);
+        $response = $this->ProjectService->projectsUser($userId);
 
         if (!$response) {
             return response()->json([
