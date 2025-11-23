@@ -27,4 +27,9 @@ class Ticket extends Model
     {
         return $this->belongsTo(User::class, 'ticket_from', 'user_id');
     }
+
+    public function track()
+    {
+        return $this->hasMany(Track_log::class, 'ticket_id', 'ticket_id');
+    }
 }

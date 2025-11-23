@@ -107,4 +107,14 @@ class EngineerController extends Controller
     {
         //
     }
+
+    public function engineer_track(Request $request){
+        $response = $this->ProjectService->engineertrack($request);
+
+        // return $response;
+
+        return Inertia::render('Track',[
+            'response' => $response
+        ]);
+    }
 }

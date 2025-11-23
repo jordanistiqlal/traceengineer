@@ -2,7 +2,7 @@ import MainLayout from '@/Layouts/MainLayout';
 import { Head } from '@inertiajs/react';
 import { useData } from '@/Contexts/DataContext';
 import dataEngineer from '../data/engineer.json'
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -29,7 +29,7 @@ function ChangeMapView({ center, zoom }) {
   return null;
 }
 
-export default function Home({sidebarData, markers = [], zoom = 11 }) {
+export default function Home({response=[], markers = [], zoom = 11 }) {
     const { selectedData } = useData();
     markers = selectedData?.titik_koordinat
     const markerList = useMemo(() => markers?.map(m => ({ ...m, latitude: Number(m.latitude), longitude: Number(m.longitude) })), [markers]);
@@ -58,4 +58,4 @@ export default function Home({sidebarData, markers = [], zoom = 11 }) {
     );
 }
 
-Home.layout = page => <MainLayout children={page} sidebarData={dataEngineer} />; // page.props.sidebarData
+Home.layout = page => <MainLayout children={page} sidebarData={page.props.response} />; // page.props.sidebarData

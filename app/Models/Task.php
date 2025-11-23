@@ -27,4 +27,9 @@ class Task extends Model
     {
         return $this->belongsTo(Project::class, 'project_id', 'project_id');
     }
+
+    public function track()
+    {
+        return $this->hasMany(Track_log::class, 'task_id', 'task_id');
+    }
 }

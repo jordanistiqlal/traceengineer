@@ -25,7 +25,8 @@ Route::middleware('guest')->group(function () {
 // Route::middleware('auth:sanctum','verified')->prefix('')->group(function () {
 Route::middleware('auth')->prefix('')->group(function () {
     Route::get('/', [HomeController::class, 'dashboard'])->name('dashboard');
-    Route::get('/track', function () {return Inertia::render('Track');});
+    // Route::get('/track', function () {return Inertia::render('Track');});
+    Route::get('/track', [EngineerController::class, 'engineer_track']);
     
     // Project
     Route::prefix('project')->group(function () {
@@ -56,10 +57,11 @@ Route::prefix('api')->group(function () {
     Route::get('/authecticated', [AuthController::class, 'authecticated']);
     Route::post('/refresh-token', [AuthController::class, 'refresh_token']);
 
+    Route::get('/track', [EngineerController::class, 'engineer_track']);
+
     Route::middleware('auth:api')->group(function () {
         Route::get('/user-profile', [ApiController::class, 'user_profile']);
         Route::get('/projects', [ApiController::class, 'projects']);
-        // Route::get('/tickets/{id}', [ApiController::class, 'tickets']);
 
         Route::post('/start-tracking', [ApiController::class, 'start_track']);
         Route::post('/stop-tracking', [ApiController::class, 'stop_track']);

@@ -23,7 +23,7 @@ const getHourUsed = (start_time, end_time) => {
 export default function Detail({data}){
     const [Engineer, setEngineer] = useState([])
     const [detailData, setdetailData] = useState({
-        name: "", phone: "", image: "", email: "", titik_koordinat: [], project: "", project_name: "", start_time: "", end_time: "",
+        id: "", name: "", phone: "", image: "", email: "", titik_koordinat: [], project: "", project_name: "", start_time: "", end_time: "",
     })
     const [now, setNow] = useState(Date.now());
     const {selectedData, setSelectedData} = useData()
@@ -31,20 +31,23 @@ export default function Detail({data}){
     const transitionAnimated = `transition-all duration-100 ease-in-out ${Visible ? 'opacity-100 scale-100' : 'opacity-0 scale-100'}`
 
     const detailUser = (data) => {
-        if (data.name == detailData.name) return
+        if (data.id == detailData.id) return
 
         setVisible(false)
 
         setTimeout(() => {
             setSelectedData(data)
             setdetailData({
+                id: data.unique_id,
                 name: data.name,
                 phone: data.phone,
                 image: data.image,
                 email: data.email,
                 titik_koordinat: data.titik_koordinat,
-                project: data.project,
                 project_name: data.project_name,
+                project_type: data.task_name ? "INSTALASI" : 'MAINTENENCE',
+                ticket_site: data.ticket_site,
+                task_name: data.task_name,
                 start_time: data.start_time,
                 end_time: data.end_time,
             })        
@@ -77,7 +80,7 @@ export default function Detail({data}){
                             key={i} 
                             onClick={() => detailUser(index)}
                             className={`group relative flex items-center gap-2 text-gray-600 font-bold w-full cursor-pointer hover:text-black transition-all duration-300 ease-in-out rounded-xl 
-                            ${detailData.name == index.name 
+                            ${detailData.id == index.unique_id 
                                 ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md translate-x-1' 
                                 : 'text-gray-600 hover:bg-gray-100 hover:text-blue-600'}
                             `}
@@ -86,7 +89,7 @@ export default function Detail({data}){
                             {index.name}
                             <span
                                 className={`absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-md transition-all duration-300 
-                                    ${detailData.name == index.name  ? "bg-blue-600 scale-y-100" : "bg-transparent scale-y-0 group-hover:bg-blue-300 group-hover:scale-y-100"}
+                                    ${detailData.id == index.unique_id  ? "bg-blue-600 scale-y-100" : "bg-transparent scale-y-0 group-hover:bg-blue-300 group-hover:scale-y-100"}
                                 `}
                             ></span>
                         </button>
@@ -115,9 +118,13 @@ export default function Detail({data}){
                         <div className="font-bold">No. Hp</div>
                         <div>{detailData.phone}</div>
                         <div className="font-bold">Project</div>
-                        <div>{detailData.project}</div>
+                        <div></div>
                         <div className="font-bold">Nama Project</div>
                         <div>{detailData.project_name}</div>
+                        <div className="font-bold">Tipe Project</div>
+                        <div>{detailData.project_type}</div>
+                        <div className="font-bold"></div>
+                        <div>{detailData?.project_type == 'INSTALASI' ? detailData.task_name : detailData.ticket_site}</div>
                         {/* <div className="font-bold">Waktu Penyelesaian</div>
                         <div>{detailData.start_time} - {detailData.end_time}</div> */}
                     </div>
