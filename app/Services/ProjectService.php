@@ -138,7 +138,9 @@ class ProjectService
                 Task::where('task_id',$request->task_id)->update($update_time);
             }
 
-            $this->location_track($request);
+            if($request->location){
+                $this->location_track($request);
+            }
 
             DB::commit();
             return ['Success', $message.' Start'];
@@ -261,8 +263,8 @@ class ProjectService
             },
             'task.project:project_id,project_name,project_type',
             'task.project.ticket' => function ($query) {
-                $query->select('ticket_id','project_id','ticket_site','ticket_tanggal','ticket_jam','ticket_from','ticket_problem','bodyraw','start_time','end_time')
-                ->where('end_time', null);
+                $query->select('ticket_id','project_id','ticket_site','ticket_tanggal','ticket_jam','ticket_from','ticket_problem','bodyraw','start_time','end_time');
+                // ->where('end_time', null);
             },
         ])
         ->select('user_id', 'name')
@@ -316,7 +318,6 @@ class ProjectService
             }
 
             // penambahan task non-MAINTENANCE ke dalam project
-            // if($projectType !== "MAINTENANCE"){} // jika; instalasi yang memiliki task
             $projectMap[$projectType][$projectId]['task'][] = [
                 'task_id' => $task->task_id,
                 'project_id' => $task->project_id,

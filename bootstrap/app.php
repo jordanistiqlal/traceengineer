@@ -37,4 +37,42 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 401);
             }
         });
+        
+        // GLOBAL API ERROR HANDLER (untuk error lain: 404, 500, 403, dll)
+        $exceptions->render(function (Throwable $e, $request) {
+
+        if ($request->is('api/*') || $request->expectsJson()) {
+
+            $status = 500;
+
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+                $status = 404;
+            }
+
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException) {
+                $status = 405;
+            }
+
+            if ($e instanceof \Illuminate\Auth\Access\AuthorizationException) {
+                $status = 403;
+            }
+
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'errors' => $e->errors(),
+                ], 422);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+                'type' => class_basename($e),
+            ], $status);
+        }
+
+        // Untuk web, Laravel gunakan default HTML error page
+        return null;
+    });
     })->create();
