@@ -359,194 +359,6 @@ class ProjectService
         return $response;
     }
 
-    // private function engineertrackFormat($data){
-    //     $response = [];
-        
-    //     foreach($data as $user){
-    //         $workStatus = "";
-    //         $project = "";
-    //         $projectName = "";
-    //         $startTime = "";
-    //         $endTime = "";
-            
-    //         // Cek apakah user memiliki task
-    //         if(!empty($user->task)){
-    //             // Ambil task pertama yang sedang aktif (memiliki start_time)
-    //             $activeTask = collect($user->task)->first(function($task){
-    //                 return !empty($task->start_time);
-    //             });
-                
-    //             // Jika tidak ada task aktif, ambil task pertama
-    //             if(!$activeTask && count($user->task) > 0){
-    //                 $activeTask = $user->task[0];
-    //             }
-                
-    //             if($activeTask){
-    //                 $project = $activeTask->project_id;
-    //                 $projectName = $activeTask->project->project_name ?? "";
-    //                 $startTime = $activeTask->start_time ?? "";
-    //                 $endTime = $activeTask->end_time ?? "";
-                    
-    //                 // Tentukan work_status berdasarkan task_type dan keberadaan ticket
-    //                 if($activeTask->task_type == "MAINTENANCE" && 
-    //                 isset($activeTask->project->ticket) && 
-    //                 count($activeTask->project->ticket) > 0){
-    //                     $workStatus = "ticket";
-    //                 } else {
-    //                     $workStatus = "task";
-    //                 }
-    //             }
-    //         }
-            
-    //         $response[] = [
-    //             "name" => $user->name,
-    //             "username" => $user->username,
-    //             "phone" => $user->nohp,
-    //             "image" => "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
-    //             "email" => $user->email,
-    //             "titik_koordinat" => [], // nanti saja disesuaikan
-    //             "work_status" => $workStatus,
-    //             "project" => $project,
-    //             "project_name" => $projectName,
-    //             "start_time" => $startTime,
-    //             "end_time" => $endTime,
-    //         ];
-    //     }
-        
-    //     return $response;
-    // }
-
-    // private function engineertrackFormat($data){
-    //     $response = [];
-        
-    //     foreach($data as $user){
-    //         // Jika user tidak memiliki task, tampilkan sekali dengan data kosong
-    //         if(empty($user->task)){
-    //             $response[] = [
-    //                 "name" => $user->name,
-    //                 "username" => $user->username,
-    //                 "phone" => $user->nohp,
-    //                 "image" => "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
-    //                 "email" => $user->email,
-    //                 "titik_koordinat" => [],
-    //                 "work_status" => "",
-    //                 "project" => "",
-    //                 "project_name" => "",
-    //                 "start_time" => "",
-    //                 "end_time" => "",
-    //             ];
-    //         } else {
-    //             // Loop setiap task, user akan muncul sesuai jumlah task/project
-    //             foreach($user->task as $task){
-    //                 $workStatus = "";
-                    
-    //                 // Tentukan work_status berdasarkan task_type dan keberadaan ticket
-    //                 if($task->task_type == "MAINTENANCE" && 
-    //                 isset($task->project->ticket) && 
-    //                 count($task->project->ticket) > 0){
-    //                     $workStatus = "ticket";
-    //                 } else {
-    //                     $workStatus = "task";
-    //                 }
-                    
-    //                 $response[] = [
-    //                     "name" => $user->name,
-    //                     "username" => $user->username,
-    //                     "phone" => $user->nohp,
-    //                     "image" => "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
-    //                     "email" => $user->email,
-    //                     "titik_koordinat" => [],
-    //                     "work_status" => $workStatus,
-    //                     "project" => $task->project_id,
-    //                     "project_name" => $task->project->project_name ?? "",
-    //                     "start_time" => $task->start_time ?? "",
-    //                     "end_time" => $task->end_time ?? "",
-    //                 ];
-    //             }
-    //         }
-    //     }
-        
-    //     return $response;
-    // }
-
-    // private function engineertrackFormat($data){
-    //     $response = [];
-        
-    //     foreach($data as $user){
-    //         // Jika user tidak memiliki task, tampilkan sekali dengan data kosong
-    //         if(empty($user->task)){
-    //             $response[] = [
-    //                 "name" => $user->name,
-    //                 "username" => $user->username,
-    //                 "phone" => $user->nohp,
-    //                 "image" => "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
-    //                 "email" => $user->email,
-    //                 "titik_koordinat" => [],
-    //                 "work_status" => "",
-    //                 "project" => "",
-    //                 "project_name" => "",
-    //                 "start_time" => "",
-    //                 "end_time" => "",
-    //             ];
-    //         } else {
-    //             // Loop setiap task, user akan muncul sesuai jumlah task/project
-    //             foreach($user->task as $task){
-    //                 $workStatus = "";
-    //                 $titikKoordinat = [];
-                    
-    //                 // Tentukan work_status berdasarkan task_type dan keberadaan ticket
-    //                 if($task->task_type == "MAINTENANCE" && 
-    //                 isset($task->project->ticket) && 
-    //                 count($task->project->ticket) > 0){
-    //                     $workStatus = "ticket";
-                        
-    //                     // Ambil track dari semua ticket dalam project
-    //                     foreach($task->project->ticket as $ticket){
-    //                         if(isset($ticket->track) && count($ticket->track) > 0){
-    //                             foreach($ticket->track as $track){
-    //                                 $titikKoordinat[] = [
-    //                                     "latitude" => $track->latitude,
-    //                                     "longitude" => $track->longitude,
-    //                                     "timestamp" => $track->timestamp
-    //                                 ];
-    //                             }
-    //                         }
-    //                     }
-    //                 } else {
-    //                     $workStatus = "task";
-                        
-    //                     // Ambil track dari task
-    //                     if(isset($task->track) && count($task->track) > 0){
-    //                         foreach($task->track as $track){
-    //                             $titikKoordinat[] = [
-    //                                 "latitude" => $track->latitude,
-    //                                 "longitude" => $track->longitude,
-    //                                 "timestamp" => $track->timestamp
-    //                             ];
-    //                         }
-    //                     }
-    //                 }
-                    
-    //                 $response[] = [
-    //                     "name" => $user->name,
-    //                     "username" => $user->username,
-    //                     "phone" => $user->nohp,
-    //                     "image" => "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==",
-    //                     "email" => $user->email,
-    //                     "titik_koordinat" => $titikKoordinat,
-    //                     "work_status" => $workStatus,
-    //                     "project" => $task->project_id,
-    //                     "project_name" => $task->project->project_name ?? "",
-    //                     "start_time" => $task->start_time ?? "",
-    //                     "end_time" => $task->end_time ?? "",
-    //                 ];
-    //             }
-    //         }
-    //     }
-        
-    //     return $response;
-    // }
-
     private function engineertrackFormat($data){
         $response = [];
         
@@ -669,5 +481,36 @@ class ProjectService
         }
         
         return $response;
+    }
+
+    public function destroy_track($id)
+    {
+        DB::beginTransaction();
+        try {
+            $task = Task::where('task_id',$id)->first();
+            $ticket = Ticket::where('ticket_id',$id)->first();
+            
+            if($task){
+                Track_log::where('task_id', $id)->delete();
+            } elseif($ticket){
+                Track_log::where('ticket_id', $id)->delete();
+            }else{
+                Track_log::where('track_log_id', $id)->delete();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                "status" => true,
+                "message" => 'Track log by id Deteled'
+            ],200);
+        } 
+        catch (Exception $error) {
+            DB::rollBack();
+            return response()->json([
+                'status' => false,
+                'message' => $error->getMessage()
+            ], 500);
+        }
     }
 }

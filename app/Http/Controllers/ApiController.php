@@ -114,4 +114,8 @@ class ApiController extends Controller
             'message'=> $result[1],
         ], 500);
     }
+
+    public function destroy_track(string $id){
+        return $this->ProjectService->destroy_track($id);
+    }
 }

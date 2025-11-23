@@ -58,6 +58,7 @@ Route::prefix('api')->group(function () {
     Route::post('/refresh-token', [AuthController::class, 'refresh_token']);
 
     Route::get('/track', [EngineerController::class, 'engineer_track']);
+    Route::get('/track/{id}', [ApiController::class, 'destroy_track']);
 
     Route::middleware('auth:api')->group(function () {
         Route::get('/user-profile', [ApiController::class, 'user_profile']);
