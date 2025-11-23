@@ -328,7 +328,9 @@ class ProjectService
 
         // penyesuaian struktur
         foreach($projectMap as $type => $projects){
-            $groupedProjects[] = array_merge(...array_values($projects));
+            foreach ($projects as $project) {
+                $groupedProjects[] = $project;
+            }
         }
 
         return $groupedProjects;
