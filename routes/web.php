@@ -53,6 +53,7 @@ Route::fallback(function () {
 // API Routes
 Route::prefix('api')->group(function () {
     Route::post('/login', [AuthController::class, 'jwt_login']);
+    Route::get('/authecticated', [AuthController::class, 'authecticated']);
     Route::post('/refresh-token', [AuthController::class, 'refresh_token']);
 
     Route::middleware('auth:api')->group(function () {

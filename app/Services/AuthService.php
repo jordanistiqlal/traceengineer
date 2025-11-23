@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\TokenInvalidException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
  * Class AuthService.
@@ -169,6 +173,43 @@ class AuthService
                 'status' => 'Error',
                 'message' => $error->getMessage()
             ];
+        }
+    }
+
+    public function authecticated_api($request){
+        try {
+            // Cek apakah token valid
+            $user = JWTAuth::parseToken()->authenticate();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Token invalid or user not found.'
+                ], 401);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Token is active.'
+            ], 200);
+
+        } catch (TokenExpiredException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Token has expired.'
+            ], 401);
+
+        } catch (TokenInvalidException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Token is invalid.'
+            ], 401);
+
+        } catch (JWTException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Token not provided.'
+            ], 400);
         }
     }
 

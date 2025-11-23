@@ -48,6 +48,11 @@ class AuthController extends Controller
         return $this->authService->api_login($request);
     }
 
+    public function authecticated(Request $request)
+    {
+        return $this->authService->authecticated_api($request);
+    }
+
     public function refresh_token(Request $request)
     {
         return $this->authService->refresh_token($request);
